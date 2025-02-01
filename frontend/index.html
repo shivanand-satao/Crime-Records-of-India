@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User and Admin</title>
+</head>
+<body>
+    <h1>Add User</h1>
+    <form id="userForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="full_name" placeholder="Full Name" required>
+        <input type="text" id="department" placeholder="Department">
+        <button type="submit">Add User</button>
+    </form>
+
+    <h1>Add Admin</h1>
+    <form id="adminForm">
+        <input type="text" id="admin_username" placeholder="Username" required>
+        <input type="password" id="admin_password" placeholder="Password" required>
+        <input type="email" id="admin_email" placeholder="Email" required>
+        <input type="text" id="admin_full_name" placeholder="Full Name" required>
+        <input type="text" id="role" placeholder="Role">
+        <button type="submit">Add Admin</button>
+    </form>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                email: document.getElementById('email').value,
+                full_name: document.getElementById('full_name').value,
+                department: document.getElementById('department').value
+            };
+            console.log('User data:', data);
+            const response = await fetch('http://localhost:3000/addUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            console.log('User response:', result);
+            alert(result.message || 'No message in response');
+        });
+
+        document.getElementById('adminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('admin_username').value,
+                password: document.getElementById('admin_password').value,
+                email: document.getElementById('admin_email').value,
+                full_name: document.getElementById('admin_full_name').value,
+                role: document.getElementById('role').value
+            };
+            console.log('Admin data:', data);
+            const response = await fetch('http://localhost:3000/addAdmin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            console.log('Admin response:', result);
+            alert(result.message || 'No message in response');
+        });
+    </script>
+</body>
+</html>

@@ -14,7 +14,7 @@ app.post('/addUser', async (req, res) => {
         res.status(201).json({ message: 'User added successfully', userId: results.insertId });
     } catch (error) {
         console.error('Error inserting user:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -26,7 +26,7 @@ app.post('/addAdmin', async (req, res) => {
         res.status(201).json({ message: 'Admin added successfully', adminId: results.insertId });
     } catch (error) {
         console.error('Error inserting admin:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 

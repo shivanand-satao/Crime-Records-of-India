@@ -37,14 +37,19 @@
                 department: document.getElementById('department').value
             };
             console.log('User data:', data);
-            const response = await fetch('http://localhost:3000/addUser', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            console.log('User response:', result);
-            alert(result.message || 'No message in response');
+            try {
+                const response = await fetch('http://localhost:3000/addUser', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                console.log('User response:', result);
+                alert(result.message || 'No message in response');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
         });
 
         document.getElementById('adminForm').addEventListener('submit', async (e) => {
@@ -57,14 +62,19 @@
                 role: document.getElementById('role').value
             };
             console.log('Admin data:', data);
-            const response = await fetch('http://localhost:3000/addAdmin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            console.log('Admin response:', result);
-            alert(result.message || 'No message in response');
+            try {
+                const response = await fetch('http://localhost:3000/addAdmin', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                console.log('Admin response:', result);
+                alert(result.message || 'No message in response');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
         });
     </script>
 </body>

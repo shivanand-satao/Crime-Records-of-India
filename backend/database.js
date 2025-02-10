@@ -17,4 +17,5 @@ try {
     console.error('Error establishing database connection:', error);
 }
 
+
 export default pool;

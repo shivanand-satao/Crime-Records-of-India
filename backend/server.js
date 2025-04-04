@@ -37,10 +37,19 @@ app.post('/loginUser', async (req, res) => {
         const [results] = await pool.query(query, [email, password]);
         
         if (results.length > 0) {
+            // Send only necessary user data
+            const userData = {
+                id: results[0].id,
+                email: results[0].email,
+                username: results[0].username,
+                department: results[0].department,
+                full_name: results[0].full_name
+            };
+            
             res.json({ 
                 success: true,
                 message: 'User login successful', 
-                user: results[0] 
+                user: userData
             });
         } else {
             res.status(401).json({ 
@@ -52,7 +61,7 @@ app.post('/loginUser', async (req, res) => {
         console.error('Error during user login:', error);
         res.status(500).json({ 
             success: false,
-            message: error.message 
+            message: 'Internal server error' 
         });
     }
 });

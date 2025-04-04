@@ -1,4 +1,4 @@
-Dashboard.html
+board.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +6,7 @@ Dashboard.html
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard - crimewatch</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .sidebar {
             height: 100vh;
@@ -34,6 +35,17 @@ Dashboard.html
     </style>
 </head>
 <body>
+    <!-- Session Check -->
+    <script>
+        // Check session before rendering content
+        (function() {
+            const userInfo = localStorage.getItem('userData');
+            if (!userInfo) {
+                window.location.href = 'loginUser.html';
+            }
+        })();
+    </script>
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -41,8 +53,7 @@ Dashboard.html
                 <h3 class="text-white text-center mb-4">Crime Watch</h3>
                 <a href="#dashboard" class="active"><i class="fas fa-home mr-2"></i>Dashboard</a>
                 <a href="#profile"><i class="fas fa-user mr-2"></i>My Profile</a>
-                <a href="#trips"><i class="fas fa-plane mr-2"></i>My Trips</a>
-                <a href="#bookings"><i class="fas fa-ticket-alt mr-2"></i>My Bookings</a>
+                <a href="#reports"><i class="fas fa-file mr-2"></i>Reports</a>
                 <a href="#settings"><i class="fas fa-cog mr-2"></i>Settings</a>
                 <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
             </div>
@@ -84,9 +95,9 @@ Dashboard.html
     </div>
 
     <script>
-        // Check authentication
+        // Load user data
         window.onload = function() {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const userInfo = JSON.parse(localStorage.getItem('userData'));
             if (!userInfo) {
                 window.location.href = 'loginUser.html';
                 return;
@@ -102,69 +113,16 @@ Dashboard.html
             `;
         }
 
+        // Logout function
         function logout() {
-            localStorage.removeItem('userInfo');
-            window.location.href = 'index.html';
+            localStorage.removeItem('userData');
+            window.location.href = 'loginUser.html';
         }
     </script>
 
-    <script>
-        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                username: document.getElementById('admin_username').value,
-                password: document.getElementById('admin_password').value
-            };
-            try {
-                const response = await fetch('http://localhost:3000/loginAdmin', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.message || 'Login successful!');
-                    window.location.href = 'adminDashboard.html'; // Redirect to admin dashboard
-                } else {
-                    alert(result.message || 'Invalid credentials. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error logging in. Please try again later.');
-            }
-        });
-    </script>
-
-    <script>
-        document.getElementById('userLoginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                username: document.getElementById('user_username').value,
-                password: document.getElementById('user_password').value
-            };
-            try {
-                const response = await fetch('http://localhost:3000/loginUser', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.message || 'Login successful!');
-                    window.location.href = 'userDashboard.html'; // Redirect to user dashboard
-                } else {
-                    alert(result.message || 'Invalid credentials. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error logging in. Please try again later.');
-            }
-        });
-    </script>
-
+    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </body>
 </html>

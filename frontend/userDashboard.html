@@ -4,7 +4,7 @@ Dashboard.html
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - TripTrial</title>
+    <title>User Dashboard - crimewatch</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .sidebar {
@@ -106,6 +106,60 @@ Dashboard.html
             localStorage.removeItem('userInfo');
             window.location.href = 'index.html';
         }
+    </script>
+
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('admin_username').value,
+                password: document.getElementById('admin_password').value
+            };
+            try {
+                const response = await fetch('http://localhost:3000/loginAdmin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message || 'Login successful!');
+                    window.location.href = 'adminDashboard.html'; // Redirect to admin dashboard
+                } else {
+                    alert(result.message || 'Invalid credentials. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error logging in. Please try again later.');
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById('userLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('user_username').value,
+                password: document.getElementById('user_password').value
+            };
+            try {
+                const response = await fetch('http://localhost:3000/loginUser', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message || 'Login successful!');
+                    window.location.href = 'userDashboard.html'; // Redirect to user dashboard
+                } else {
+                    alert(result.message || 'Invalid credentials. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error logging in. Please try again later.');
+            }
+        });
     </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crime Watch - Login as User</title>
+    <title>Login as User</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -11,74 +11,96 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+        .container {
+            margin-top: 100px;
         }
-        input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+        .form-group {
+            margin-bottom: 15px;
         }
-        button {
-            width: 100%;
-            padding: 10px;
+        .btn-primary {
             background-color: #007BFF;
-            color: #fff;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
         }
-        button:hover {
+        .btn-primary:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Crime Watch - Login as User</h1>
-    <form id="loginUserForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-    <script>
-        document.getElementById('loginUserForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value
-            };
-            console.log('User login data:', data);
-            try {
-                const response = await fetch('http://localhost:3000/loginUser', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                console.log('User login response:', result);
-                localStorage.setItem('userInfo', JSON.stringify(result.user));
-window.location.href = 'userDashboard.html';
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <h1 class="text-primary m-0"><span class="text-white">Crime</span>Watch</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="addUser.html">Add User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="addAdmin.html">Add Admin</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="loginUser.html">Login as User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="loginAdmin.html">Login as Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-                alert(result.message || 'No message in response');
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error: ' + error.message);
-            }
+    <!-- User Login Form -->
+    <div class="container mt-5">
+        <h2 class="text-center">Login as User</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2025 Crime Watch. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#loginForm').on('submit', async function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                const data = {
+                    email: $('#email').val(),
+                    password: $('#password').val()
+                };
+
+                try {
+                    const response = await fetch('http://localhost:3000/loginUser', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert(result.message);
+                        window.location.href = 'userdashboard.html'; // Redirect to user dashboard
+                    } else {
+                        alert(result.message || 'Invalid login credentials');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error logging in. Please try again later.');
+                }
+            });
         });
     </script>
 </body>

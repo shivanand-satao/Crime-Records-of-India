@@ -11,11 +11,6 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
         form {
             background-color: #fff;
@@ -23,24 +18,19 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
+            margin: 100px auto;
         }
-        input {
-            width: calc(100% - 20px);
+        input, button {
+            width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
         }
         button {
-            width: 100%;
-            padding: 10px;
             background-color: #007BFF;
             color: #fff;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
@@ -49,26 +39,98 @@
     </style>
 </head>
 <body>
-    <h1>Crime Watch - Add User</h1>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <h1 class="text-primary m-0"><span class="text-white">Crime</span>Watch</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="addUser.html">Add User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="addAdmin.html">Add Admin</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="loginUser.html">Login as User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="loginAdmin.html">Login as Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Add User Form -->
     <form id="userForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="text" id="full_name" placeholder="Full Name" required>
-        <input type="text" id="department" placeholder="Department">
+        <h2 class="text-center">Add User</h2>
+        <input type="text" id="user_username" placeholder="Username" required>
+        <input type="password" id="user_password" placeholder="Password" required>
+        <input type="email" id="user_email" placeholder="Email" required>
+        <input type="text" id="user_full_name" placeholder="Full Name" required>
         <button type="submit">Add User</button>
     </form>
+ <!-- Footer -->
+ <footer>
+    <div class="container-fluid bg-dark text-white-50 py-5 px-sm-3 px-lg-5">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <a href="" class="navbar-brand">
+                    <h1 class="text-primary"><span class="text-white">Crime</span>Watch</h1>
+                </a>
+                <p>Crime Watch is your trusted source for crime statistics and analysis across India. We provide detailed insights into crime rates, prevention strategies, and safety awareness to help create safer communities.</p>
+                <h6 class="text-white text-uppercase mt-4 mb-3">Join Us</h6>
+                <p>Be a part of the change. Share your insights and help us build a safer society.</p>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h5 class="text-white text-uppercase mb-4">Quick Links</h5>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                    <a class="text-white-50 mb-2" href="addUser.html"><i class="fa fa-angle-right mr-2"></i>Add User</a>
+                    <a class="text-white-50 mb-2" href="addAdmin.html"><i class="fa fa-angle-right mr-2"></i>Add Admin</a>
+                    <a class="text-white-50 mb-2" href="loginUser.html"><i class="fa fa-angle-right mr-2"></i>Login as User</a>
+                    <a class="text-white-50 mb-2" href="loginAdmin.html"><i class="fa fa-angle-right mr-2"></i>Login as Admin</a>
+                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Crime Statistics</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h5 class="text-white text-uppercase mb-4">Contact Us</h5>
+                <p><i class="fa fa-map-marker-alt mr-2"></i>Pune Street, Maharashtra, India</p>
+                <p><i class="fa fa-phone-alt mr-2"></i>+91 95793 25554</p>
+                <p><i class="fa fa-envelope mr-2"></i>crimewatch@support.com</p>
+                
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h5 class="text-white text-uppercase mb-4">About Crime Watch</h5>
+                <p>We aim to provide accurate and up-to-date crime data to raise awareness and promote safety. Explore crime trends, prevention tips, and regional statistics to stay informed.</p>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-dark text-white border-top py-4 px-sm-3 px-md-5">
+        <div class="row">
+            <div class="col-lg-6 text-center text-md-left mb-3 mb-md-0">
+                <p class="m-0 text-white-50">Copyright &copy; <a href="#">Crime Watch</a>. All Rights Reserved.</p>
+            </div>
+            <div class="col-lg-6 text-center text-md-right">
+                <p class="m-0 text-white-50">Designed by <a href="#">Shivanand Satao</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2025 Crime Watch. All Rights Reserved.</p>
+    </footer>
+
     <script>
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
-                email: document.getElementById('email').value,
-                full_name: document.getElementById('full_name').value,
-                department: document.getElementById('department').value
+                username: document.getElementById('user_username').value,
+                password: document.getElementById('user_password').value,
+                email: document.getElementById('user_email').value,
+                full_name: document.getElementById('user_full_name').value
             };
-            console.log('User data:', data);
             try {
                 const response = await fetch('http://localhost:3000/addUser', {
                     method: 'POST',
@@ -76,11 +138,10 @@
                     body: JSON.stringify(data)
                 });
                 const result = await response.json();
-                console.log('User response:', result);
-                alert(result.message || 'No message in response');
+                alert(result.message || 'User added successfully!');
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error: ' + error.message);
+                alert('Error adding user.');
             }
         });
     </script>

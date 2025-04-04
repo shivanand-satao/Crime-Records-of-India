@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import pool from './database.js';
+import pool from './database.js'; // Ensure this file exists and is correctly configured
 
 const app = express();
 app.use(cors()); // Enable CORS
@@ -31,19 +31,29 @@ app.post('/addAdmin', async (req, res) => {
 });
 
 app.post('/loginUser', async (req, res) => {
-    const { username, password } = req.body;
-    console.log(username+password)
-    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+    const { email, password } = req.body;
     try {
-        const [results] = await pool.query(query, [username, password]);
+        const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
+        const [results] = await pool.query(query, [email, password]);
+        
         if (results.length > 0) {
-            res.json({ message: 'User login successful', user: results[0] });
+            res.json({ 
+                success: true,
+                message: 'User login successful', 
+                user: results[0] 
+            });
         } else {
-            res.status(401).json({ message: 'Invalid username or password' });
+            res.status(401).json({ 
+                success: false,
+                message: 'Invalid email or password' 
+            });
         }
     } catch (error) {
         console.error('Error during user login:', error);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            success: false,
+            message: error.message 
+        });
     }
 });
 
@@ -53,25 +63,23 @@ app.post('/loginAdmin', async (req, res) => {
     try {
         const [results] = await pool.query(query, [username, password]);
         if (results.length > 0) {
-            res.json({ message: 'Admin login successful', admin: results[0] });
+            res.json({ 
+                success: true,
+                message: 'Admin login successful', 
+                admin: results[0] 
+            });
         } else {
-            res.status(401).json({ message: 'Invalid username or password' });
+            res.status(401).json({ 
+                success: false,
+                message: 'Invalid username or password' 
+            });
         }
     } catch (error) {
         console.error('Error during admin login:', error);
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.post('/submitResponse', async (req, res) => {
-    const { email, name, message } = req.body;
-    const query = 'INSERT INTO response (email, name, message, created_at) VALUES (?, ?, ?, NOW())';
-    try {
-        const [results] = await pool.query(query, [email, name, message]);
-        res.status(201).json({ message: 'Response submitted successfully', responseId: results.insertId });
-    } catch (error) {
-        console.error('Error submitting response:', error);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            success: false,
+            message: error.message 
+        });
     }
 });
 

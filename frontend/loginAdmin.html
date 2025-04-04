@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crime Watch - Login as Admin</title>
+    <title>Login as Admin</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -11,11 +11,6 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
         form {
             background-color: #fff;
@@ -23,24 +18,19 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
+            margin: 100px auto;
         }
-        input {
-            width: calc(100% - 20px);
+        input, button {
+            width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
         }
         button {
-            width: 100%;
-            padding: 10px;
             background-color: #007BFF;
             color: #fff;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
@@ -49,20 +39,47 @@
     </style>
 </head>
 <body>
-    <h1>Crime Watch - Login as Admin</h1>
-    <form id="loginAdminForm">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <h1 class="text-primary m-0"><span class="text-white">Crime</span>Watch</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="addUser.html">Add User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="addAdmin.html">Add Admin</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="loginUser.html">Login as User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="loginAdmin.html">Login as Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Login Form -->
+    <form id="adminLoginForm">
+        <h2 class="text-center">Admin Login</h2>
         <input type="text" id="admin_username" placeholder="Username" required>
         <input type="password" id="admin_password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2025 Crime Watch. All Rights Reserved.</p>
+    </footer>
+
     <script>
-        document.getElementById('loginAdminForm').addEventListener('submit', async (e) => {
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = {
                 username: document.getElementById('admin_username').value,
                 password: document.getElementById('admin_password').value
             };
-            console.log('Admin login data:', data);
             try {
                 const response = await fetch('http://localhost:3000/loginAdmin', {
                     method: 'POST',
@@ -70,13 +87,21 @@
                     body: JSON.stringify(data)
                 });
                 const result = await response.json();
-                console.log('Admin login response:', result);
-                localStorage.setItem('adminInfo', JSON.stringify(result.admin));
-window.location.href = 'adminDashboard.html';
-                alert(result.message || 'No message in response');
+                if (response.ok && result.success) {
+                    // Store admin data in localStorage
+                    localStorage.setItem('adminData', JSON.stringify({
+                        isLoggedIn: true,
+                        username: result.admin.username,
+                        role: result.admin.role,
+                        timestamp: new Date().getTime()
+                    }));
+                    window.location.href = 'adminDashboard.html';
+                } else {
+                    alert(result.message || 'Invalid credentials.');
+                }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error: ' + error.message);
+                alert('Error logging in.');
             }
         });
     </script>

@@ -1,0 +1,57 @@
+.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login - Crime Watch</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- User Login Form -->
+    <form id="userLoginForm" class="container mt-5">
+        <h2 class="text-center">User Login</h2>
+        <div class="form-group">
+            <input type="email" id="user_email" class="form-control" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="user_password" class="form-control" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <script>
+        document.getElementById('userLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                email: document.getElementById('user_email').value,
+                password: document.getElementById('user_password').value
+            };
+            try {
+                const response = await fetch('http://localhost:3000/loginUser', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    // Store user data in localStorage
+                    localStorage.setItem('userData', JSON.stringify({
+                        isLoggedIn: true,
+                        email: result.user.email,
+                        username: result.user.username,
+                        department: result.user.department,
+                        timestamp: new Date().getTime()
+                    }));
+                    window.location.href = 'userDashboard.html';
+                } else {
+                    alert(result.message || 'Invalid credentials.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error logging in.');
+            }
+        });
+    </script>
+</body>
+</html>

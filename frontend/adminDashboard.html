@@ -1,0 +1,157 @@
+\frontend\adminDashboard.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TripTrial</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background-color: #1a1a1a;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: white;
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #333;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .stats-card {
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .quick-stats {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <h3 class="text-white text-center mb-4">Admin Panel</h3>
+                <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+                <a href="#users"><i class="fas fa-users mr-2"></i>Manage Users</a>
+                <a href="#trips"><i class="fas fa-plane mr-2"></i>Manage Trips</a>
+                <a href="#bookings"><i class="fas fa-ticket-alt mr-2"></i>Bookings</a>
+                <a href="#reports"><i class="fas fa-chart-bar mr-2"></i>Reports</a>
+                <a href="#settings"><i class="fas fa-cog mr-2"></i>Settings</a>
+                <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="stats-card">
+                    <h2>Welcome, <span id="adminName">Admin</span></h2>
+                    <p>Here's your administration overview</p>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="quick-stats">
+                            <h5>Total Users</h5>
+                            <h3 id="totalUsers">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="quick-stats">
+                            <h5>Total Trips</h5>
+                            <h3 id="totalTrips">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="quick-stats">
+                            <h5>Active Bookings</h5>
+                            <h3 id="activeBookings">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent Users</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="recentUsers">
+                                    <p>Loading user data...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">System Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">✓ Server Status: Online</li>
+                                    <li class="mb-2">✓ Database: Connected</li>
+                                    <li class="mb-2">✓ Last Backup: Today</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        window.onload = function() {
+            const adminInfo = JSON.parse(localStorage.getItem('adminInfo'));
+            if (!adminInfo) {
+                window.location.href = 'loginAdmin.html';
+                return;
+            }
+
+            // Populate admin information
+            document.getElementById('adminName').textContent = adminInfo.full_name || adminInfo.username;
+            
+            // Simulate loading statistics
+            setTimeout(() => {
+                document.getElementById('totalUsers').textContent = '150';
+                document.getElementById('totalTrips').textContent = '45';
+                document.getElementById('activeBookings').textContent = '28';
+                
+                // Simulate loading recent users
+                document.getElementById('recentUsers').innerHTML = `
+                    <ul class="list-unstyled">
+                        <li class="mb-2">👤 John Doe - Registered today</li>
+                        <li class="mb-2">👤 Jane Smith - Registered yesterday</li>
+                        <li class="mb-2">👤 Mike Johnson - Registered 2 days ago</li>
+                    </ul>
+                `;
+            }, 1000);
+        }
+
+        function logout() {
+            localStorage.removeItem('adminInfo');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</body>
+</html>

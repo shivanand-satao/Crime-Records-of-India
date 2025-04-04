@@ -71,6 +71,8 @@
                 });
                 const result = await response.json();
                 console.log('Admin login response:', result);
+                localStorage.setItem('adminInfo', JSON.stringify(result.admin));
+window.location.href = 'adminDashboard.html';
                 alert(result.message || 'No message in response');
             } catch (error) {
                 console.error('Error:', error);

@@ -1,0 +1,116 @@
+Dashboard.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - TripTrial</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: white;
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .welcome-card {
+            background: linear-gradient(to right, #007bff, #0056b3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <h3 class="text-white text-center mb-4">TripTrial</h3>
+                <a href="#dashboard" class="active"><i class="fas fa-home mr-2"></i>Dashboard</a>
+                <a href="#profile"><i class="fas fa-user mr-2"></i>My Profile</a>
+                <a href="#trips"><i class="fas fa-plane mr-2"></i>My Trips</a>
+                <a href="#bookings"><i class="fas fa-ticket-alt mr-2"></i>My Bookings</a>
+                <a href="#settings"><i class="fas fa-cog mr-2"></i>Settings</a>
+                <a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="welcome-card">
+                    <h2>Welcome Back, <span id="userName">User</span>!</h2>
+                    <p>What would you like to explore today?</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Profile Information</h5>
+                            </div>
+                            <div class="card-body" id="userInfo">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent Activities</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">✓ Last login: <span id="lastLogin">Today</span></li>
+                                    <li class="mb-2">✓ Account status: Active</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        window.onload = function() {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            if (!userInfo) {
+                window.location.href = 'loginUser.html';
+                return;
+            }
+
+            // Populate user information
+            document.getElementById('userName').textContent = userInfo.full_name || userInfo.username;
+            document.getElementById('userInfo').innerHTML = `
+                <p><strong>Username:</strong> ${userInfo.username}</p>
+                <p><strong>Email:</strong> ${userInfo.email}</p>
+                <p><strong>Department:</strong> ${userInfo.department || 'Not specified'}</p>
+                <p><strong>Member Since:</strong> ${new Date().toLocaleDateString()}</p>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem('userInfo');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</body>
+</html>

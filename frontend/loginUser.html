@@ -71,6 +71,9 @@
                 });
                 const result = await response.json();
                 console.log('User login response:', result);
+                localStorage.setItem('userInfo', JSON.stringify(result.user));
+window.location.href = 'userDashboard.html';
+
                 alert(result.message || 'No message in response');
             } catch (error) {
                 console.error('Error:', error);

@@ -63,6 +63,18 @@ app.post('/loginAdmin', async (req, res) => {
     }
 });
 
+app.post('/submitResponse', async (req, res) => {
+    const { email, name, message } = req.body;
+    const query = 'INSERT INTO response (email, name, message, created_at) VALUES (?, ?, ?, NOW())';
+    try {
+        const [results] = await pool.query(query, [email, name, message]);
+        res.status(201).json({ message: 'Response submitted successfully', responseId: results.insertId });
+    } catch (error) {
+        console.error('Error submitting response:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

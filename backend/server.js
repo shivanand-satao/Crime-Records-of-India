@@ -92,6 +92,49 @@ app.post('/loginAdmin', async (req, res) => {
     }
 });
 
+app.get('/showTables', async (req, res) => {
+    try {
+        const [results] = await pool.query('SHOW TABLES');
+        const excludedTables = ['admins', 'audit_log', 'views_log', 'users', 'response'];
+        
+        // Filter out the excluded tables
+        const tables = results
+            .map(row => Object.values(row)[0])
+            .filter(tableName => !excludedTables.includes(tableName));
+        
+        res.json({ 
+            success: true,
+            tables: tables
+        });
+    } catch (error) {
+        console.error('Error fetching tables:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching tables' 
+        });
+    }
+});
+
+app.get('/showAllTables', async (req, res) => {
+    try {
+        const [results] = await pool.query('SHOW TABLES');
+        
+        // Get all tables without filtering
+        const tables = results.map(row => Object.values(row)[0]);
+        
+        res.json({ 
+            success: true,
+            tables: tables
+        });
+    } catch (error) {
+        console.error('Error fetching all tables:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching tables' 
+        });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

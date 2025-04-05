@@ -14,14 +14,15 @@ try {
     }).promise();
     console.log('Database connection established successfully.');
 
- async function a() {
-    const res=await pool.query(`
-        select * from admins; 
-        `);
-        return res;
- }
- const ans=await a();
- console.log(ans);
+//  async function a() {
+//     const res=await pool.query(`
+//         show  tables; 
+//         `);
+// const ans=res[0];
+//         return ans;
+//  }
+//  const ans=await a();
+//  console.log(ans);
 
 } catch (error) {
     console.error('Error establishing database connection:', error);

@@ -32,6 +32,17 @@ board.html
             border-radius: 10px;
             margin-bottom: 20px;
         }
+        
+        .input-group-text {
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+        }
+        
+        #tableSearch:focus {
+            box-shadow: none;
+            border-color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -90,12 +101,35 @@ board.html
                         </div>
                     </div>
                 </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Available Database Tables</h5>
+                                <div class="input-group w-50">
+                                    <input type="text" id="tableSearch" class="form-control" placeholder="Search tables...">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row" id="tableList">
+                                    <!-- Tables will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // Load user data
+        let allTables = []; // Store tables globally
+
         window.onload = function() {
             const userInfo = JSON.parse(localStorage.getItem('userData'));
             if (!userInfo) {
@@ -111,6 +145,8 @@ board.html
                 <p><strong>Department:</strong> ${userInfo.department || 'Not specified'}</p>
                 <p><strong>Member Since:</strong> ${new Date().toLocaleDateString()}</p>
             `;
+
+            loadTables();
         }
 
         // Logout function
@@ -118,6 +154,59 @@ board.html
             localStorage.removeItem('userData');
             window.location.href = 'loginUser.html';
         }
+
+        // Load database tables
+        async function loadTables() {
+            try {
+                const response = await fetch('http://localhost:3000/showTables');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allTables = data.tables; // Store tables globally
+                    displayTables(allTables);
+                }
+            } catch (error) {
+                console.error('Error loading tables:', error);
+            }
+        }
+
+        // New function to display tables
+        function displayTables(tables) {
+            console.log('Available Tables in crime_database:');
+            console.log('----------------------------------');
+            tables.forEach((table, index) => {
+                console.log(`${index + 1}. ${table}`);
+            });
+
+            const tableList = document.getElementById('tableList');
+            tableList.innerHTML = tables.map(table => `
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-table mr-2"></i>
+                                ${table}
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Search functionality
+        document.getElementById('tableSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const tableCards = document.querySelectorAll('#tableList .col-md-4');
+            
+            tableCards.forEach(card => {
+                const tableName = card.querySelector('.card-title').textContent.toLowerCase();
+                if (tableName.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     </script>
 
     <!-- Bootstrap JS and dependencies -->

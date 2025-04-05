@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table View - Crime Watch</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .table-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .table-responsive {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        #dataTable thead th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+            font-size: 0.9rem;
+        }
+        .header-section {
+            margin-bottom: 20px;
+        }
+        .btn-back {
+            margin-bottom: 15px;
+        }
+        .column-filter {
+            font-size: 0.8rem;
+            padding: 2px 5px;
+        }
+        .filter-container {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        #dataTable th {
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="header-section">
+            <button class="btn btn-secondary btn-back" onclick="window.close()">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+            <h2 id="tableTitle">Loading...</h2>
+        </div>
+        
+        <div class="table-container">
+            <div class="filter-container mb-3">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select id="stateFilter" class="form-control">
+                            <option value="">All States</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="yearFilter" class="form-control">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" id="dataTable">
+                    <thead>
+                        <tr id="filterRow">
+                            <!-- Column headers with filters will be inserted here -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let originalData = [];
+        let columns = [];
+
+        async function loadTableData() {
+            const tableName = sessionStorage.getItem('currentTable');
+            if (!tableName) return;
+
+            try {
+                // Fetch table data
+                const response = await fetch(`http://localhost:3000/getTableData/${tableName}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    originalData = result.data;
+                    columns = result.columns;
+                    
+                    // Create column headers with filters
+                    const thead = document.querySelector('#filterRow');
+                    thead.innerHTML = columns.map(column => `
+                        <th>
+                            ${column}
+                            ${isFilterableColumn(column) ? createFilterDropdown(column) : ''}
+                        </th>
+                    `).join('');
+
+                    // Load filter values
+                    await loadFilterValues();
+                    
+                    // Display initial data
+                    displayFilteredData(originalData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function isFilterableColumn(column) {
+            const filterableColumns = ['state', 'year', 'State', 'Year', 'STATE', 'YEAR'];
+            return filterableColumns.includes(column);
+        }
+
+        function createFilterDropdown(column) {
+            return `
+                <div class="mt-2">
+                    <select class="form-control form-control-sm column-filter" data-column="${column}">
+                        <option value="">All ${column}s</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        async function loadFilterValues() {
+            const tableName = sessionStorage.getItem('currentTable');
+            
+            for (const column of columns) {
+                if (isFilterableColumn(column)) {
+                    try {
+                        const response = await fetch(`http://localhost:3000/getColumnValues/${tableName}/${column}`);
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            const dropdown = document.querySelector(`select[data-column="${column}"]`);
+                            if (dropdown) {
+                                result.values.forEach(value => {
+                                    const option = document.createElement('option');
+                                    option.value = value;
+                                    option.textContent = value;
+                                    dropdown.appendChild(option);
+                                });
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`Error loading ${column} values:`, error);
+                    }
+                }
+            }
+
+            // Add event listeners to all filter dropdowns
+            document.querySelectorAll('.column-filter').forEach(filter => {
+                filter.addEventListener('change', applyFilters);
+            });
+        }
+
+        function applyFilters() {
+            const filters = {};
+            document.querySelectorAll('.column-filter').forEach(filter => {
+                const column = filter.dataset.column;
+                const value = filter.value;
+                if (value) {
+                    filters[column] = value;
+                }
+            });
+
+            const filteredData = originalData.filter(row => {
+                return Object.entries(filters).every(([column, value]) => {
+                    return row[column]?.toString() === value;
+                });
+            });
+
+            displayFilteredData(filteredData);
+        }
+
+        function displayFilteredData(data) {
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    ${columns.map(column => `<td>${row[column] || ''}</td>`).join('')}
+                </tr>
+            `).join('');
+        }
+
+        // Call loadTableData when page loads
+        window.onload = loadTableData;
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

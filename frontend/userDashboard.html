@@ -1,4 +1,3 @@
-board.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,6 +41,99 @@ board.html
         #tableSearch:focus {
             box-shadow: none;
             border-color: #007bff;
+        }
+
+        /* Updated table styles */
+        .table-responsive {
+            max-height: 85vh; /* Increased from 70vh */
+            overflow-y: auto;
+            font-size: 0.9rem; /* Increased from 0.85rem */
+            overflow-x: auto; /* Optional: Add horizontal scroll for very wide tables */
+        }
+        
+        .modal-xl {
+            max-width: 95%; /* Increased from 90% */
+            margin: 15px auto;
+        }
+        
+        #dataTable thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1;
+            font-size: 1rem; /* Increased from 0.9rem */
+            font-weight: 600;
+            padding: 0.75rem; /* Increased padding */
+        }
+
+        #dataTable {
+            font-size: 0.9rem; /* Increased from 0.85rem */
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        #dataTable td {
+            padding: 0.75rem; /* Increased padding */
+            vertical-align: middle;
+        }
+
+        .modal-body {
+            padding: 1rem; /* Increased from 0.75rem */
+        }
+
+        .modal-dialog {
+            margin: 10px auto;
+        }
+
+        .table td, .table th {
+            white-space: nowrap; /* Prevents text wrapping */
+            min-width: 100px; /* Minimum column width */
+        }
+
+        /* Add to existing styles */
+        .table-card {
+            transition: transform 0.2s;
+        }
+        
+        .table-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        #categoryFilter {
+            margin-bottom: 10px;
+        }
+        
+        .card-text.small {
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
+        
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Add to existing styles */
+        .column-header {
+            white-space: normal;
+            min-width: 150px;
+        }
+        
+        .column-filter {
+            font-size: 0.8rem;
+            padding: 2px 5px;
+            width: 100%;
+        }
+        
+        #dataTable th {
+            vertical-align: top;
+            padding: 8px;
+        }
+        
+        .dropdown {
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -105,12 +197,23 @@ board.html
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Available Database Tables</h5>
-                                <div class="input-group w-50">
-                                    <input type="text" id="tableSearch" class="form-control" placeholder="Search tables...">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title mb-0">Available Database Tables</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <select id="categoryFilter" class="form-control">
+                                            <option value="">All Categories</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="input-group">
+                                            <input type="text" id="tableSearch" class="form-control" placeholder="Search tables...">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -122,13 +225,40 @@ board.html
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal for Table View -->
+                <div class="modal fade" id="tableViewModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Table View</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered" id="dataTable">
+                                        <thead>
+                                            <!-- Headers will be inserted here -->
+                                        </thead>
+                                        <tbody>
+                                            <!-- Data will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // Load user data
-        let allTables = []; // Store tables globally
+        let tablesByCategory = {};
+        let currentTableData = []; // Add this global variable
 
         window.onload = function() {
             const userInfo = JSON.parse(localStorage.getItem('userData'));
@@ -158,55 +288,219 @@ board.html
         // Load database tables
         async function loadTables() {
             try {
-                const response = await fetch('http://localhost:3000/showTables');
+                const response = await fetch('http://localhost:3000/getTableGroups');
                 const data = await response.json();
                 
                 if (data.success) {
-                    allTables = data.tables; // Store tables globally
-                    displayTables(allTables);
+                    // Process and store tables by category
+                    tablesByCategory = {};
+                    const categorySelect = document.getElementById('categoryFilter');
+                    categorySelect.innerHTML = '<option value="">All Categories</option>';
+                    
+                    data.groups.forEach(group => {
+                        const tables = group.tables.split(',');
+                        tablesByCategory[group.category] = tables;
+                        
+                        // Add category to dropdown
+                        categorySelect.innerHTML += `
+                            <option value="${group.category}">${group.category}</option>
+                        `;
+                    });
+                    
+                    // Display all tables initially
+                    displayTables(getAllTables());
                 }
             } catch (error) {
                 console.error('Error loading tables:', error);
             }
         }
 
-        // New function to display tables
-        function displayTables(tables) {
-            console.log('Available Tables in crime_database:');
-            console.log('----------------------------------');
-            tables.forEach((table, index) => {
-                console.log(`${index + 1}. ${table}`);
-            });
+        function getAllTables() {
+            return Object.values(tablesByCategory).flat();
+        }
 
+        function displayTables(tables) {
             const tableList = document.getElementById('tableList');
             tableList.innerHTML = tables.map(table => `
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3 table-card" data-table="${table}">
                     <div class="card bg-light">
                         <div class="card-body">
                             <h6 class="card-title">
                                 <i class="fas fa-table mr-2"></i>
                                 ${table}
                             </h6>
+                            <p class="card-text small text-muted">
+                                ${getCategoryForTable(table)}
+                            </p>
+                            <button class="btn btn-primary btn-sm mt-2" onclick="viewTable('${table}')">
+                                <i class="fas fa-eye mr-1"></i> View Data
+                            </button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Search functionality
-        document.getElementById('tableSearch').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const tableCards = document.querySelectorAll('#tableList .col-md-4');
+        function getCategoryForTable(tableName) {
+            for (const [category, tables] of Object.entries(tablesByCategory)) {
+                if (tables.includes(tableName)) {
+                    return category;
+                }
+            }
+            return 'Other Cases';
+        }
+
+        // Add event listeners for filtering
+        document.getElementById('categoryFilter').addEventListener('change', filterTables);
+        document.getElementById('tableSearch').addEventListener('input', filterTables);
+
+        function filterTables() {
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
             
-            tableCards.forEach(card => {
-                const tableName = card.querySelector('.card-title').textContent.toLowerCase();
-                if (tableName.includes(searchTerm)) {
-                    card.style.display = '';
+            let filteredTables = [];
+            
+            if (selectedCategory) {
+                filteredTables = tablesByCategory[selectedCategory] || [];
+            } else {
+                filteredTables = getAllTables();
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredTables = filteredTables.filter(table => 
+                    table.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayTables(filteredTables);
+        }
+
+        async function viewTable(tableName) {
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userData'));
+                if (!userInfo) return;
+
+                // Show loading state
+                const modal = $('#tableViewModal');
+                modal.find('.modal-title').text(`Loading ${tableName}...`);
+                modal.modal('show');
+
+                // Fetch table data
+                const response = await fetch(`http://localhost:3000/getTableData/${tableName}`);
+                const result = await response.json();
+                
+                console.log('Fetched data:', result); // Debug log
+
+                if (result.success && result.data && result.columns) {
+                    displayTableData(tableName, result.columns, result.data);
                 } else {
-                    card.style.display = 'none';
+                    console.error('Invalid data structure:', result);
+                    alert('Error loading table data: Invalid data structure');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading table data');
+            }
+        }
+
+        function getUniqueValues(data, column) {
+            return [...new Set(data.map(row => row[column]))].filter(value => value != null).sort();
+        }
+
+        function displayTableData(tableName, columns, data) {
+            console.log('Displaying data:', { tableName, columns, data }); // Debug log
+            
+            const modal = $('#tableViewModal');
+            const table = document.getElementById('dataTable');
+            
+            // Store the data globally
+            currentTableData = data;
+            
+            // Set modal title
+            modal.find('.modal-title').text(`${tableName} Data (${data.length} rows)`);
+            
+            // Create table header
+            const thead = table.querySelector('thead');
+            thead.innerHTML = `
+                <tr>
+                    ${columns.map(column => `
+                        <th>
+                            <div class="column-header">
+                                ${column}
+                                <div class="dropdown mt-2">
+                                    <select class="form-control form-control-sm column-filter" 
+                                            data-column="${column}"
+                                            onchange="filterTableData('${tableName}')">
+                                        <option value="">All ${column}</option>
+                                        ${getUniqueValues(data, column).map(value => 
+                                            `<option value="${value}">${value !== null ? value : ''}</option>`
+                                        ).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                        </th>
+                    `).join('')}
+                </tr>
+            `;
+            
+            // Display initial data
+            updateTableBody(data, columns);
+            
+            // Add event listeners to filters
+            document.querySelectorAll('.column-filter').forEach(filter => {
+                filter.addEventListener('change', () => filterTableData(tableName));
+            });
+        }
+
+        function updateTableBody(data, columns) {
+            console.log('Updating table body with:', data.length, 'rows'); // Debug log
+            
+            const tbody = document.getElementById('dataTable').querySelector('tbody');
+            
+            if (!data.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${columns.length}" class="text-center">No data available</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    ${columns.map(column => `
+                        <td>${row[column] !== null ? row[column] : ''}</td>
+                    `).join('')}
+                </tr>
+            `).join('') + `
+                <tr class="table-info">
+                    <td colspan="${columns.length}">
+                        <strong>Total Rows: ${data.length}</strong>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function filterTableData(tableName) {
+            const filters = {};
+            document.querySelectorAll('.column-filter').forEach(filter => {
+                const value = filter.value;
+                if (value !== '') {
+                    filters[filter.dataset.column] = value;
                 }
             });
-        });
+            
+            // Apply filters
+            const filteredData = currentTableData.filter(row => {
+                return Object.entries(filters).every(([column, value]) => {
+                    return row[column]?.toString() === value.toString();
+                });
+            });
+            
+            // Update display with filtered data
+            updateTableBody(filteredData, Object.keys(currentTableData[0] || {}));
+        }
     </script>
 
     <!-- Bootstrap JS and dependencies -->

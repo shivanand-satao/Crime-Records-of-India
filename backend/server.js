@@ -135,6 +135,85 @@ app.get('/showAllTables', async (req, res) => {
     }
 });
 
+app.get('/getTableData/:tableName', async (req, res) => {
+    try {
+        const tableName = req.params.tableName;
+        console.log(`Fetching data for table: ${tableName}`);
+        
+        // Use parameterized query to prevent SQL injection
+        const [results] = await pool.query(`SELECT * FROM ??`, [tableName]);
+        console.log(`Found ${results.length} rows`);
+        
+        // Get columns from the first row
+        const columns = results.length > 0 ? Object.keys(results[0]) : [];
+        
+        res.json({ 
+            success: true,
+            data: results,
+            columns: columns
+        });
+        
+    } catch (error) {
+        console.error('Error fetching table data:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching table data',
+            error: error.message
+        });
+    }
+});
+
+app.get('/getTableGroups', async (req, res) => {
+    try {
+        const [results] = await pool.query(`
+            SELECT 
+                CASE 
+                    WHEN table_name LIKE '%murder%' THEN 'Murder Related'
+                    WHEN table_name LIKE '%custodial%' THEN 'Custodial Cases'
+                    WHEN table_name LIKE '%theft%' THEN 'Theft Cases'
+                    WHEN table_name LIKE '%rape%' THEN 'Sexual Offenses'
+                    WHEN table_name LIKE '%police%' THEN 'Police Related'
+                    ELSE 'Other Cases'
+                END as category,
+                GROUP_CONCAT(table_name) as tables
+            FROM information_schema.tables 
+            WHERE table_schema = DATABASE()
+            AND table_name NOT IN ('admins', 'audit_log', 'views_log', 'users', 'response')
+            GROUP BY category
+        `);
+        
+        res.json({ 
+            success: true,
+            groups: results
+        });
+    } catch (error) {
+        console.error('Error fetching table groups:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching table groups' 
+        });
+    }
+});
+
+app.get('/getColumnValues/:tableName/:columnName', async (req, res) => {
+    try {
+        const { tableName, columnName } = req.params;
+        const query = `SELECT DISTINCT ${columnName} FROM ${tableName} ORDER BY ${columnName}`;
+        const [results] = await pool.query(query);
+        
+        res.json({ 
+            success: true,
+            values: results.map(row => row[columnName])
+        });
+    } catch (error) {
+        console.error('Error fetching column values:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching filter values' 
+        });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
